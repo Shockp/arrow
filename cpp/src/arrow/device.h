@@ -235,6 +235,18 @@ class ARROW_EXPORT MemoryManager : public std::enable_shared_from_this<MemoryMan
   static Status CopyBufferSliceToCPU(const std::shared_ptr<Buffer>& buf, int64_t offset,
                                      int64_t length, uint8_t* out_data);
 
+  /// \brief EXPERIMENTAL: Count the number of set bits in a device buffer
+  virtual Result<int64_t> CountSetBits(const std::shared_ptr<Buffer>& buf, int64_t offset,
+                                       int64_t length) {
+    return Status::NotImplemented("CountSetBits not implemented for this MemoryManager");
+  }
+
+  /// \brief EXPERIMENTAL: Copy a slice of a bitmap from a device buffer
+  virtual Result<std::shared_ptr<Buffer>> CopyBitmap(const std::shared_ptr<Buffer>& buf,
+                                                     int64_t offset, int64_t length) {
+    return Status::NotImplemented("CopyBitmap not implemented for this MemoryManager");
+  }
+
   /// \brief Create a new SyncEvent.
   ///
   /// This version should construct the appropriate event for the device and
@@ -309,6 +321,12 @@ class ARROW_EXPORT CPUMemoryManager : public MemoryManager {
       std::shared_ptr<Buffer> buf) override;
 
   Result<std::unique_ptr<Buffer>> AllocateBuffer(int64_t size) override;
+
+  Result<int64_t> CountSetBits(const std::shared_ptr<Buffer>& buf, int64_t offset,
+                               int64_t length) override;
+
+  Result<std::shared_ptr<Buffer>> CopyBitmap(const std::shared_ptr<Buffer>& buf,
+                                             int64_t offset, int64_t length) override;
 
   /// \brief Return the MemoryPool associated with this MemoryManager.
   MemoryPool* pool() const { return pool_; }
